@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  phone String
+  birthday String
+  description String
+  user_type String
+  password String
+  cpf String  @unique
+  user_image String
+  address Address?
+  reset_token String?
+  anouncements Anouncement[]
+  comment Comment[]
+}
+
+enum UserType{
+  COMPRADOR
+  ANUNCIANTE
+}
+
+enum FuelType{
+  ETANOL
+  GASOLINA
+  FLEX
+}
+
+model Anouncement{
+  id Int @id @default(autoincrement())
+  brand String
+  model String
+  year String
+  fuel String
+  mileage String
+  color String
+  fipe_price String
+  price String
+  description String
+  cover_image String
+  user_id Int
+  user User @relation(fields:[user_id], references:[id])
+  comments Comment[]
+  images Image[]
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  comment String
+  user_id Int
+  anouncement_id Int
+  anouncement Anouncement @relation(fields:[anouncement_id], references:[id])
+  user User @relation(fields:[user_id], references:[id])
+  created_at DateTime @default(now())
+}
+
+model Address{
+  id Int @id @default(autoincrement())
+  CEP String
+  state String
+  city String
+  street String
+  number String
+  complement String
+  user_id Int @unique
+  user User @relation(fields:[user_id], references:[id])
+}
+
+model Image{
+  id Int @id @default(autoincrement())
+  image_url String
+  anouncement_id Int
+  anouncement Anouncement @relation(fields:[anouncement_id], references:[id])
+}
